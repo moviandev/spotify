@@ -35,13 +35,16 @@ exports.login = catchHandler(async (req, res, next) => {
 
   // Comparing passwords
   if (!user || !(await user.correctPassword(password, user.password)))
-    return next(new AppError(`Email and passwor`, 401));
+    return next(new AppError(`Email or password does not exist`, 401));
 
   // Return user
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: process.env.JWT_EXPIRES
+  });
 
   res.status(200).json({
     status: 'Logged',
-    token: '',
+    token,
     user
   });
 });

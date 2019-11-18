@@ -16,7 +16,8 @@ const usersSchema = new mongoose.Schema({
     type: String,
     minLength: [8, 'Password should have a least 8 characters'],
     select: false,
-    required: true
+    required: true,
+    trim: true
   },
   confirmPass: {
     type: String,
@@ -25,7 +26,8 @@ const usersSchema = new mongoose.Schema({
       return el === this.password;
     },
     message: `Passwords doesn't match`,
-    required: true
+    required: true,
+    trim: true
   }
   // albuns: { type: mongoose.Schema.Type.ObjectId, ref: 'Album' }
 });
