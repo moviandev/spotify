@@ -48,3 +48,17 @@ exports.login = catchHandler(async (req, res, next) => {
     user
   });
 });
+
+exports.validate = catchHandler(async (req, res, next) => {
+  jwt.verify(
+    req.headers['x-auth-token'],
+    process.env.JWT_SECRET,
+    (err, decoded) => {
+      if (err)
+        return next(new AppError(`Internal Error, please try again`, 500));
+
+      req.body.userID = decoded.id;
+      next();
+    }
+  );
+});
