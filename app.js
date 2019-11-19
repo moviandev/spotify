@@ -2,6 +2,7 @@ const express = require('express');
 const morgan = require('morgan');
 
 const AppError = require('./utils/AppError');
+const globalErrorHandler = require('./controller/errorController');
 
 const app = express();
 
@@ -23,12 +24,9 @@ app.use('/api/v1/users/', userRouter);
 
 // Handling routes errors
 app.all('*', (req, res, next) => {
-  next(
-    new AppError(
-      `Could not found the page you were looking for. Please try again`,
-      404
-    )
-  );
+  next(new AppError(`Could not find ${req.originalUrl} on this server`, 404));
 });
+
+app.use(globalErrorHandler);
 
 module.exports = app;
