@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/usersModel');
 const catchHandler = require('../utils/catchHandler');
 const AppError = require('../utils/AppError');
+const { roles } = require('../roles/roles');
 
 exports.signup = catchHandler(async (req, res, next) => {
   const user = await User.create({
@@ -71,3 +72,29 @@ exports.validate = (req, res, next) => {
     }
   );
 };
+
+exports.grantAccess = (action, resource) => {
+  return catchHandler(async (req, res, next) => {
+    const permission = roles.can(req.user.role)[action](resource);
+
+    if (!permission.granted)
+      return next(
+        new AppError(
+          `You don't have enough permission to perform this action`,
+          401
+        )
+      );
+    next();
+  });
+};
+
+exports.allowIfLoggedIn = catchHandler(async (req, res, next) => {
+  const user = req.locals.loggedInUser;
+
+  if (!user)
+    return next(
+      new AppError(`You need to be logged in to access this route`, 401)
+    );
+  req.user = user;
+  next();
+});
