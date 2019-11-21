@@ -9,12 +9,17 @@ exports.signup = catchHandler(async (req, res, next) => {
     email: req.body.email,
     photo: req.body.photo,
     password: req.body.password,
-    confirmPass: req.body.confirmPass
+    confirmPass: req.body.confirmPass,
+    role: req.body.role || 'user'
   });
 
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES
-  });
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRES
+    }
+  );
 
   res.status(201).json({
     status: 'created',
@@ -38,9 +43,13 @@ exports.login = catchHandler(async (req, res, next) => {
     return next(new AppError(`Email or password does not exist`, 401));
 
   // Return user;
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRES
-  });
+  const token = jwt.sign(
+    { id: user._id, role: user.role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIRES
+    }
+  );
 
   res.status(200).json({
     status: 'Logged',
@@ -49,7 +58,7 @@ exports.login = catchHandler(async (req, res, next) => {
   });
 });
 
-exports.validate = catchHandler(async (req, res, next) => {
+exports.validate = (req, res, next) => {
   jwt.verify(
     req.headers['x-auth-token'],
     process.env.JWT_SECRET,
@@ -61,4 +70,4 @@ exports.validate = catchHandler(async (req, res, next) => {
       next();
     }
   );
-});
+};

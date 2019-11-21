@@ -9,6 +9,7 @@
   "author": "Matheus Viana",
   "license": "ISC",
   "dependencies": {
+    "accesscontrol": "^2.2.1",
     "app-root-path": "^3.0.0",
     "bcrypt": "^3.0.6",
     "dotenv": "^8.2.0",

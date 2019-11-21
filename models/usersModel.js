@@ -28,6 +28,14 @@ const usersSchema = new mongoose.Schema({
     message: `Passwords doesn't match`,
     required: true,
     trim: true
+  },
+  role: {
+    type: String,
+    default: 'user',
+    enum: {
+      values: ['admin', 'artist', 'user'],
+      message: 'Role is not valid'
+    }
   }
   // albuns: { type: mongoose.Schema.Type.ObjectId, ref: 'Album' }
 });
