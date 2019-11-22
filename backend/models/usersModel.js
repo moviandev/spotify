@@ -37,8 +37,8 @@ const usersSchema = new mongoose.Schema({
       message: 'Role is not valid'
     }
   },
-  passwordChangedAt: Date
-  // albuns: { type: mongoose.Schema.Type.ObjectId, ref: 'Album' }
+  passwordChangedAt: Date,
+  albuns: { type: [mongoose.Schema.Types.ObjectId], ref: 'Album' }
 });
 
 usersSchema.pre('save', async function(next) {
