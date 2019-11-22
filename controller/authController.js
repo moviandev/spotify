@@ -1,3 +1,4 @@
+// Promisify {util} it's a package built-in of node
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/usersModel');
