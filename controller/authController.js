@@ -4,6 +4,7 @@ const catchHandler = require('../utils/catchHandler');
 const AppError = require('../utils/AppError');
 const { roles } = require('../roles/roles');
 
+// Signup method and auto creates its token
 exports.signup = catchHandler(async (req, res, next) => {
   const user = await User.create({
     name: req.body.name,
@@ -29,6 +30,7 @@ exports.signup = catchHandler(async (req, res, next) => {
   });
 });
 
+// Login method and check if the jwt was valid
 exports.login = catchHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -59,6 +61,7 @@ exports.login = catchHandler(async (req, res, next) => {
   });
 });
 
+// Validate JWT
 exports.validate = (req, res, next) => {
   jwt.verify(
     req.headers['x-auth-token'],
@@ -73,6 +76,7 @@ exports.validate = (req, res, next) => {
   );
 };
 
+// Grant access to API with roles
 exports.grantAccess = (action, resource) => {
   return catchHandler(async (req, res, next) => {
     const permission = roles.can(req.user.role)[action](resource);
@@ -88,6 +92,7 @@ exports.grantAccess = (action, resource) => {
   });
 };
 
+// checks if user is logged in
 exports.allowIfLoggedIn = catchHandler(async (req, res, next) => {
   const user = req.locals.loggedInUser;
 

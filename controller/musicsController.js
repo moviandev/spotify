@@ -1,10 +1,13 @@
+cosnt APIFeatures = require('../utils/APIFeatures');
 const Music = require('../models/musicsModel');
 const Album = require('../models/albunsModel');
 const catchHandler = require('../utils/catchHandler');
 const AppError = require('../utils/AppError');
 
 exports.getAllMusics = catchHandler(async (req, res, next) => {
-  const music = await Music.find().populate('album');
+  const feats = new APIFeatures(Music.find(), req.query).sort();
+
+  const musics = await feats.query;
 
   res.status(200).json({
     status: 'success',
