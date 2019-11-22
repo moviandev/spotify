@@ -64,7 +64,7 @@ exports.login = catchHandler(async (req, res, next) => {
 });
 
 // Validate JWT
-exports.validate = catchHandler(async (req, res, next) => {
+exports.protected = catchHandler(async (req, res, next) => {
   let token;
 
   // Checking if it has a authorization header
@@ -95,10 +95,27 @@ exports.validate = catchHandler(async (req, res, next) => {
   // Checking if the password has been changed in that token
   if (currentUser.checkIfThePasswordHasBeenChanged(decoded.iat))
     return next(
-      new AppError('Password recently changed, Please login again', 401)
+      new AppError('Password recently changed, Please do login again', 401)
     );
 
   // Storing the user into the request
   req.user = currentUser;
   next();
 });
+
+// Setting restrictions to the users, ... turning the argument in an array
+exports.restrictTo = (...roles) => {
+  // Returning the express method
+  return (req, res, next) => {
+    // when adding protection we added the user into the req.user, in this way we can get it back
+    if (!roles.includes(req.user.role))
+      return next(
+        new AppError(
+          'You do not have enough permission to perform this action',
+          403
+        )
+      );
+    // calling the next middleware
+    next();
+  };
+};

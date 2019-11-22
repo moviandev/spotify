@@ -7,12 +7,24 @@ const router = express.Router();
 router
   .route('/')
   .get(albumController.getAllAlbuns)
-  .post(auth.validate, albumController.createAlbum);
+  .post(
+    auth.protected,
+    auth.restrictTo('admin', 'producer'),
+    albumController.createAlbum
+  );
 
 router
   .route('/:id')
   .get(albumController.getAlbum)
-  .patch(auth.validate, albumController.updateAlbum)
-  .delete(auth.validate, albumController.deleteAlbum);
+  .patch(
+    auth.protected,
+    auth.restrictTo('admin', 'artist', 'producer'),
+    albumController.updateAlbum
+  )
+  .delete(
+    auth.protected,
+    auth.restrictTo('admin', 'artist', 'producer'),
+    albumController.deleteAlbum
+  );
 
 module.exports = router;
