@@ -6,6 +6,7 @@ const AppError = require('../utils/AppError');
 
 // Signup method and auto creates its token
 exports.signup = catchHandler(async (req, res, next) => {
+  // Creating users
   const user = await User.create({
     name: req.body.name,
     email: req.body.email,
@@ -15,6 +16,7 @@ exports.signup = catchHandler(async (req, res, next) => {
     role: req.body.role || 'user'
   });
 
+  // setting token to the user
   const token = jwt.sign(
     { id: user._id, role: user.role },
     process.env.JWT_SECRET,

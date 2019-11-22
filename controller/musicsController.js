@@ -18,25 +18,32 @@ exports.getAllMusics = catchHandler(async (req, res, next) => {
 });
 
 exports.createMusic = catchHandler(async (req, res, next) => {
+  // Find an album by its name
   const album = await Album.findOne({
     title: req.body.albumName
   });
 
+  // Setting up the request body
   const reqBody = {
     title: req.body.title,
     albumName: req.body.albumName,
     albumID: album._id
   };
 
+  // checking if the album exits
   if (!album)
     return next(new AppError('Album Name was not find, please try again', 404));
 
+  // Creating a new music
   const musics = new Music(reqBody);
 
+  // Saving the music into the database
   await musics.save();
 
+  // Pushing the music into the music array into the album
   album.music.push(musics);
 
+  // Saving album
   await album.save();
 
   res.status(201).json({
