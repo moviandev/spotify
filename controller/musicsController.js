@@ -1,4 +1,4 @@
-cosnt APIFeatures = require('../utils/APIFeatures');
+const APIFeatures = require('../utils/APIFeatures');
 const Music = require('../models/musicsModel');
 const Album = require('../models/albunsModel');
 const catchHandler = require('../utils/catchHandler');
@@ -12,7 +12,7 @@ exports.getAllMusics = catchHandler(async (req, res, next) => {
   res.status(200).json({
     status: 'success',
     data: {
-      music
+      musics
     }
   });
 });

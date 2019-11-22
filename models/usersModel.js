@@ -33,10 +33,11 @@ const usersSchema = new mongoose.Schema({
     type: String,
     default: 'user',
     enum: {
-      values: ['admin', 'artist', 'user'],
+      values: ['admin', 'artist', 'producer', 'user'],
       message: 'Role is not valid'
     }
-  }
+  },
+  passwordChangedAt: Date
   // albuns: { type: mongoose.Schema.Type.ObjectId, ref: 'Album' }
 });
 
@@ -54,6 +55,22 @@ usersSchema.pre('save', async function(next) {
 
 usersSchema.methods.correctPassword = async function(cp, up) {
   return await bcrypt.compare(cp, up);
+};
+
+usersSchema.methods.checkIfThePasswordHasBeenChanged = function(JWTTimestamp) {
+  if (this.passwordChangedAt) {
+    // Passing time as milliseconds
+    const changedPasswordTime = parseInt(
+      this.passwordChangedAt.getTime() / 1000,
+      10
+    );
+
+    // If this condition it's true it means that the password has been changed
+    return JWTTimestamp < changedPasswordTime;
+  }
+
+  // If it is false it means that the password has not been changed
+  return false;
 };
 
 const User = mongoose.model('User', usersSchema);

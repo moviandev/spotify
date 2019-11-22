@@ -1,8 +1,8 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/usersModel');
 const catchHandler = require('../utils/catchHandler');
 const AppError = require('../utils/AppError');
-const { roles } = require('../roles/roles');
 
 // Signup method and auto creates its token
 exports.signup = catchHandler(async (req, res, next) => {
@@ -62,44 +62,41 @@ exports.login = catchHandler(async (req, res, next) => {
 });
 
 // Validate JWT
-exports.validate = (req, res, next) => {
-  jwt.verify(
-    req.headers['x-auth-token'],
-    process.env.JWT_SECRET,
-    (err, decoded) => {
-      if (err)
-        return next(new AppError(`Internal Error, please try again`, 500));
+exports.validate = catchHandler(async (req, res, next) => {
+  let token;
 
-      req.body.userID = decoded.id;
-      next();
-    }
-  );
-};
+  // Checking if it has a authorization header
+  if (req.headers.authorization && req.authorization.startsWith('Bearer'))
+    token = req.authorization.split(' ')[1];
 
-// Grant access to API with roles
-exports.grantAccess = (action, resource) => {
-  return catchHandler(async (req, res, next) => {
-    const permission = roles.can(req.user.role)[action](resource);
-
-    if (!permission.granted)
-      return next(
-        new AppError(
-          `You don't have enough permission to perform this action`,
-          401
-        )
-      );
-    next();
-  });
-};
-
-// checks if user is logged in
-exports.allowIfLoggedIn = catchHandler(async (req, res, next) => {
-  const user = req.locals.loggedInUser;
-
-  if (!user)
+  // Checking if the token exists
+  if (!token)
     return next(
-      new AppError(`You need to be logged in to access this route`, 401)
+      new AppError(`You are not logged in! Please do login and try again`, 401)
     );
-  req.user = user;
+
+  // Getting the token
+  const decoded = promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
+  // Saving the user by the id in the token
+  const currentUser = await User.findOne(decoded.id);
+
+  // CHecking if the user belongs to that token
+  if (!currentUser)
+    return next(
+      new AppError(
+        'The user belonging to that token does not exist anymore',
+        401
+      )
+    );
+
+  // Checking if the password has been changed in that token
+  if (currentUser.checkIfThePasswordHasBeenChanged(decoded.iat))
+    return next(
+      new AppError('Password recently changed, Please login again', 401)
+    );
+
+  // Storing the user into the request
+  req.user = currentUser;
   next();
 });
