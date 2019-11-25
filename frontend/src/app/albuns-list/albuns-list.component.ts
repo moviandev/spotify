@@ -1,15 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-albuns-list',
+  selector: 'spotify-albuns-list',
   templateUrl: './albuns-list.component.html',
   styleUrls: ['./albuns-list.component.scss']
 })
 export class AlbunsListComponent implements OnInit {
+  albumCover: string =
+    'https://material.angular.io/assets/img/examples/shiba2.jpg';
 
-  constructor() { }
+  constructor() {}
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
