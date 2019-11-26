@@ -1,14 +1,10 @@
 <mat-card class="example-card">
-  <img mat-card-image [src]="albumCover" alt="Photo of a Shiba Inu" />
-  <mat-card-content>
-    <p>
-      The Shiba Inu is the smallest of the six original and distinct spitz
-      breeds of dog from Japan. A small, agile dog that copes very well with
-      mountainous terrain, the Shiba Inu was originally bred for hunting.
-    </p>
-  </mat-card-content>
-  <mat-card-actions>
-    <button mat-button>LIKE</button>
-    <button mat-button>SHARE</button>
-  </mat-card-actions>
+  <div *ngFor="let a of album">
+    <img mat-card-image src="{{ a.photo }}" alt="Photo of a Shiba Inu" />
+    <mat-card-content>
+      <!-- CHECK IF THE STRUCTURE WILL STAY THIS WAY -->
+      <a>{{ a.music }}</a>
+      <a>{{ a.artist }}</a>
+    </mat-card-content>
+  </div>
 </mat-card>

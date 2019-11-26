@@ -6,8 +6,8 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./albuns-list.component.scss']
 })
 export class AlbunsListComponent implements OnInit {
-  albumCover: string =
-    'https://material.angular.io/assets/img/examples/shiba2.jpg';
+  album: String[] = [];
+  'https://material.angular.io/assets/img/examples/shiba2.jpg';
 
   constructor() {}
 
